@@ -66,3 +66,4 @@ E:\Visual Studio Projects\movies-app\MoviesAppAPI\obj\Debug\net6.0\refint\Movies
 E:\Visual Studio Projects\movies-app\MoviesAppAPI\obj\Debug\net6.0\MoviesAppAPI.pdb
 E:\Visual Studio Projects\movies-app\MoviesAppAPI\obj\Debug\net6.0\MoviesAppAPI.genruntimeconfig.cache
 E:\Visual Studio Projects\movies-app\MoviesAppAPI\obj\Debug\net6.0\ref\MoviesAppAPI.dll
+E:\Visual Studio Projects\movies-app\MoviesAppAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

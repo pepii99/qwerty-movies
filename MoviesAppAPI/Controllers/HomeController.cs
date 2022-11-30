@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-
-namespace MoviesAppAPI.Controllers
+﻿namespace MoviesAppAPI.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using MoviesAppAPI.Helpers;
+
     [ApiController]
     [Route("[controller]")]
     public class HomeController : ControllerBase
     {
-        //[Authorize]
+
+        [Authorize]
+        [HttpGet]
         public IActionResult Get()
         {
-            return this.Ok("Works");
+            return Ok("Works");
         }
     }
 }

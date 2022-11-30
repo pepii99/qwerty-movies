@@ -2,7 +2,13 @@ namespace MoviesAppAPI
 {
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using MoviesAppAPI.Controllers;
     using MoviesAppAPI.Data;
+    using MoviesAppAPI.Data.Models;
+    using MoviesAppAPI.Helpers;
+    using MoviesAppAPI.Infrastructure;
+    using MoviesAppAPI.Services.Contracts;
+    using MoviesAppAPI.Services;
 
     public class Program
     {
@@ -10,50 +16,71 @@ namespace MoviesAppAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var services = builder.Services;
+
             // Add services to the container.
             var connectionString = builder
                 .Configuration
-                .GetConnectionString("DefaultConnection") ?? 
+                .GetConnectionString("DefaultConnection") ??
                 throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            builder
-                .Services
-                .AddDbContext<ApplicationDbContext>(options => options
+            services
+                .AddDbContext<QwertyDbContext>(options => options
                 .UseSqlServer(connectionString));
 
-            builder
-                .Services
+            services
                 .AddDatabaseDeveloperPageExceptionFilter();
 
-            builder
-                .Services
-                .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services
+                .AddIdentity<User, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 2;
+                    options.User.RequireUniqueEmail = false;
+                    
+                })
+                .AddEntityFrameworkStores<QwertyDbContext>();
+
+            services
+                .Configure<AppSettings>(builder
+                .Configuration
+                .GetSection("ApplicationSettings"));
+
+            //services.AddScoped<ApiController, IdentityController>();
 
             //builder.Services.AddControllersWithViews();
-            builder.Services.AddControllers();
+            services.AddCors();
+            services.AddControllers();
+
+            services.AddScoped<IUserService, UserService>();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            //Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseMigrationsEndPoint();
+                app.UseDeveloperExceptionPage();
+                //app.UseMigrationsEndPoint();
             }
 
             app.UseRouting();
 
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-            //app.MapControllers(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
-            //app.MapRazorPages();
+            app.ApplyMigrations();
 
-            app.Run();
+            app.Run("http://localhost:4900");
         }
     }
 }
